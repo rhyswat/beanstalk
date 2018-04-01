@@ -23,9 +23,27 @@ namespace Beanstalk
                                 .SetBasePath(env.ContentRootPath)
                                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                                .AddEnvironmentVariables();
+                                .AddJsonFile(@"C:\Program Files\Amazon\ElasticBeanstalk\config\containerconfiguration", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
+
+            var config = builder.Build();
+
+            builder.AddInMemoryCollection(ParseEbConfig(config));
 
             Configuration = builder.Build();
+        }
+
+        private static Dictionary<string, string> ParseEbConfig(IConfiguration config)
+        {
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+
+            foreach (IConfigurationSection pair in config.GetSection("iis:env").GetChildren())
+            {
+                string[] keypair = pair.Value.Split(new[] { '=' }, 2);
+                dict.Add(keypair[0], keypair[1]);
+            }
+
+            return dict;
         }
 
         public IConfiguration Configuration { get; }
