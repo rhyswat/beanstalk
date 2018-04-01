@@ -1,0 +1,33 @@
+@model TeamCollectionViewModel;
+
+<div class="container">
+    <h3>Teams</h3>
+    <p>Last updated: <strong>@Model.LastUpdated</strong></p>
+
+    <div>
+        <table class="table">
+            <thead>
+                <th>Team</th>
+                <th>P</th>
+                <th>W</th>
+                <th>L</th>
+                <th>D</th>
+                <th>Pts</th>
+            </thead>
+
+            <tbody>
+                @foreach(var t in Model.Teams)
+                {
+                    <tr>
+                        <td>@t.Name</td>
+                        <td>@t.Played</td>
+                        <td>@t.Won</td>
+                        <td>@t.Lost</td>
+                        <td>@t.Drawn</td>
+                        <td>@t.Points</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
