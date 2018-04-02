@@ -1,0 +1,14 @@
+{
+    "plugins": {
+        "rds": {
+            "Description": "RDS Environment variables",
+            "env": {
+                "RDS_PORT": "xxxx",
+                "RDS_HOSTNAME": "xxx",
+                "RDS_USERNAME": "penguxxxin",
+                "RDS_DB_NAME": "xxxx",
+                "RDS_PASSWORD": "xx"
+            }
+        }
+    }
+}

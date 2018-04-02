@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using Beanstalk.Db.Context;
@@ -17,33 +18,13 @@ namespace Beanstalk
     {
         public Startup(IHostingEnvironment env)
         {
-            // note this 100% unacceptable parsing of EBS files
-            // https://stackoverflow.com/questions/44855453/access-aws-elasticbeanstalk-custom-environment-variables-with-net-core-webapp
             var builder = new ConfigurationBuilder()
                                 .SetBasePath(env.ContentRootPath)
                                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                                .AddJsonFile(@"C:\Program Files\Amazon\ElasticBeanstalk\config\containerconfiguration", optional: true, reloadOnChange: true)
-            .AddEnvironmentVariables();
-
-            var config = builder.Build();
-
-            builder.AddInMemoryCollection(ParseEbConfig(config));
+                                .AddEnvironmentVariables();
 
             Configuration = builder.Build();
-        }
-
-        private static Dictionary<string, string> ParseEbConfig(IConfiguration config)
-        {
-            Dictionary<string, string> dict = new Dictionary<string, string>();
-
-            foreach (IConfigurationSection pair in config.GetSection("iis:env").GetChildren())
-            {
-                string[] keypair = pair.Value.Split(new[] { '=' }, 2);
-                dict.Add(keypair[0], keypair[1]);
-            }
-
-            return dict;
         }
 
         public IConfiguration Configuration { get; }
@@ -75,26 +56,14 @@ namespace Beanstalk
 
         private string GetEnv(string key, string defaultValue = null)
         {
-            var value = Configuration.GetSection("DbSettings").GetValue<string>(key, null);
-            if (value == null)
-            {
-                value = System.Environment.GetEnvironmentVariable(key);
-            }
-
+            var value = System.Environment.GetEnvironmentVariable(key);
             return value ?? defaultValue;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+            app.UseDeveloperExceptionPage();
 
             app.UseStaticFiles();
 
